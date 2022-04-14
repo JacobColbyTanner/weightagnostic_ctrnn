@@ -12,7 +12,7 @@ __evolsearch_process_pool = None
 
 
 class EvolSearch:
-    def __init__(self, evol_params, initial_pop):
+    def __init__(self, evol_params, initial_pop, variable_mins, variable_maxes):
         """
         Initialize evolutionary search
         ARGS:
@@ -64,7 +64,8 @@ class EvolSearch:
         # create other required data
         self.num_processes = evol_params.get("num_processes", None)
         self.pop = np.copy(initial_pop)  # TODO: Check if initial pop is the right size
-        print(np.shape(initial_pop))
+        self.variable_mins = variable_mins
+        self.variable_maxes = variable_maxes
         self.fitness = np.zeros(self.pop_size)
         self.num_batches = int(self.pop_size / self.num_processes)
         self.num_remainder = int(self.pop_size % self.num_processes)
@@ -132,7 +133,9 @@ class EvolSearch:
         # clipping to genotype range
         for i in range(self.pop_size):
             for j in range(self.genotype_size):
-                self.pop[i, j] = np.clip(self.pop[i, j], 0, 1)
+                self.pop[i, j] = np.clip(
+                    self.pop[i, j], self.variable_mins[j], self.variable_maxes[j]
+                )
 
     def step_generation(self):
         """
