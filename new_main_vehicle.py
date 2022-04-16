@@ -5,10 +5,16 @@ from CTRNN import CTRNN
 from EvolSearch import EvolSearch
 from fitnessFunction_vehicle import fitnessFunction_vehicle
 
+import pickle
 
+# WARNING I AM FILTERING WARNINGS BECUASE PATHOS DOESN'T LIKE THEM
 import warnings
 
 warnings.filterwarnings("ignore")
+
+# use_best_individual = True
+# with open("best_individual", "rb") as f:
+#    best_individual = pickle.load(f)
 
 ctrnn_size = 10
 pop_size = 100
@@ -46,6 +52,15 @@ print(evolution.get_best_individual())
 mean_fitness = []
 mean_fitness.append(evolution.get_mean_fitness())
 
+
+# save_best_individual = {
+#    "params": params,
+#    "included_worlds": included_worlds,
+#    "num_updates": num_updates,
+#    "best_fitness": [],
+#    "mean_fitness": [],
+# }
+
 for i in range(10):
     evolution.step_generation()
     best_individual = evolution.get_best_individual()
@@ -57,4 +72,6 @@ for i in range(10):
     mean_fitness.append(evolution.get_mean_fitness())
 
     print(len(best_fitness), best_fitness[-1], evolution.get_mean_fitness())
+#    with open("best_individual11", "wb") as f:
+#        pickle.dump(save_best_individual, f)
 
