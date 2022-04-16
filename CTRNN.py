@@ -3,7 +3,7 @@ from scipy.sparse import csr_matrix
 
 
 class CTRNN:
-    def __init__(self, size=2, step_size=0.1):
+    def __init__(self, size=2, step_size=0.01):
         """
         Constructer that initializes a random network
         with unit time-constants and biases
