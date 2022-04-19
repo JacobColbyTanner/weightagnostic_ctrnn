@@ -1,9 +1,10 @@
 from CTRNN import CTRNN
 import numpy as np
 import braitenberg as bv
+import matplotlib.pyplot as plt
+import random
 
-
-def fitnessFunction_vehicle(ctrnn_parameters, ctrnn_size, step_size):
+def simulate_cont(ctrnn_parameters, ctrnn_size, step_size):
     duration = 20
     time = np.arange(0.0, duration, step_size)
 
@@ -12,21 +13,15 @@ def fitnessFunction_vehicle(ctrnn_parameters, ctrnn_size, step_size):
     num_weights = ctrnn_size ** 2
 
     new_weights = ctrnn_parameters[:num_weights]
-    # new = new_weights
 
-    # translate genome into ctrnn parameters
-    new = np.zeros(num_weights)
 
-    # force same weights, positive and negative across the network
-    for i in range(num_weights):
-        if new_weights[i] > 2 / 3:
-            new[i] = 1
-        elif new_weights[i] < 1 / 3:
-            new[i] = -1
-        else:
-            new[i] = 0
 
-    ctrnn.weights = new.reshape((ctrnn_size, ctrnn_size))
+    ctrnn.weights = new_weights.reshape((ctrnn_size, ctrnn_size))
+
+    print("CTRNN Network weights")
+    print(ctrnn.weights)
+
+
     ctrnn.taus = ctrnn_parameters[num_weights : (num_weights + ctrnn_size)] + 0.0001
     ctrnn.biases = 2 * (
         ctrnn_parameters[(num_weights + ctrnn_size) : (num_weights + 2 * ctrnn_size)]
@@ -43,7 +38,7 @@ def fitnessFunction_vehicle(ctrnn_parameters, ctrnn_size, step_size):
     #Run until transient dynamics are gone
     ctrnn_input = np.zeros(ctrnn_size)
 
-    for i in range(150):
+    for i in range(100):
         ctrnn.euler_step(ctrnn_input)
 
     distance = 5
@@ -52,35 +47,53 @@ def fitnessFunction_vehicle(ctrnn_parameters, ctrnn_size, step_size):
     # Create stimuli in environment
     steps = 0
     finaldistance = 0
+    ii = 0
+    agentpos = np.zeros((len(bearing),len(time),2))
+    foodpos = np.zeros((len(bearing),2))
     for angle in bearing:
         # Create the agent body
         body = bv.Agent(ctrnn_size)
         food = bv.Food(distance, angle)
-
+        foodpos[ii] = food.pos()
         ctrnn_input = np.zeros(ctrnn_size)
 
-        for t in time:
 
+        j = 0
+        for t in time:
             # Set neuron input as the sensor activation levels
             ctrnn_input[-2:] = body.sensor_state()
+            agentpos[ii][j] = body.pos().squeeze()
             # Update the nervous system based on inputs
-
             for i in range(5):
                 ctrnn.euler_step(ctrnn_input)
-
             # Update the body based on nervous system activity
             states = ctrnn.outputs[0:2]
-
             if np.isnan(np.sum(states)):
                 return 0.0
 
             # print(states.shape)
             motorneuron_outputs = states
             body.step(food, motorneuron_outputs, step_size)
-            finaldistance += body.distance(food)
-            steps += 1
+            # Store current body position
+            
+            j += 1
+        ii += 1
+        
 
-    fitness = np.clip(1 - ((finaldistance / steps) / distance), 0, 1)
+    for i in range(len(bearing)):
+        r = random.random()
+        b = random.random()
+        g = random.random()
+        color = (r, g, b)
+        plt.plot(agentpos[i,:,0],agentpos[i,:,1], color=color)
+        plt.plot(foodpos[i, 0], foodpos[i, 1],'o', color=color)
+        print("In plots")
 
-    return fitness
+    plt.savefig(f"{ctrnn_size}_neuron_all.png")
+    print("After save")
+    plt.clf()
+
+
+
+
 

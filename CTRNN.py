@@ -17,7 +17,7 @@ class CTRNN:
         self.biases = np.ones(size)
         self.gains = np.ones(size)
         self.weights = csr_matrix(np.random.rand(size, size))
-        self.states = np.random.rand(size)
+        self.states = np.zeros(size) #np.random.rand(size)
         self.outputs = self.sigmoid(self.states)
 
     @property
