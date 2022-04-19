@@ -2,7 +2,7 @@ import numpy as np
 
 class Agent:
 
-    def __init__(self, nnSize):
+    def __init__(self):
         self.x = 0.0                                    # agent's x position
         self.y = 0.0                                    # agent's y position
         self.o = 0.0                                    # agent's orientation
