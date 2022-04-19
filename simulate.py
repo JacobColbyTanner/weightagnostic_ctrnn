@@ -84,10 +84,10 @@ def simulate(ctrnn_parameters, ctrnn_size, ctrnn_step_size, duration, distance, 
 if __name__ == "__main__":
     with open("best_individual3", "rb") as f:
         best_individual = pickle.load(f) 
-"""
-    params = np.copy(best_individual["params"])
+
+    '''
     for i in range(len(params)):
-        modified_params = np.copy(params)
+        modified_params = np.copy(best_individual["params"])
         # Set param to 0 (set to 0.4 becuase it is between 1/3 and 2/3)
         modified_params[i] = 0.4
         print(
@@ -103,7 +103,23 @@ if __name__ == "__main__":
                 params[i],
                 modified_params[i]
             )
-"""
+    '''
+
+    for multiplier in np.arange(-10, 10, 1):
+        print(
+            fitnessFunction_vehicle(        
+                best_individual["params"],
+                best_individual["ctrnn_size"],
+                best_individual["ctrnn_step_size"],
+                best_individual["bv_duration"],
+                best_individual["bv_distance"],
+                best_individual["bv_step_size"],
+                best_individual["transient_steps"],
+                multiplier
+                ),
+                multiplier
+            )
+        
     simulate(
         best_individual["params"],
         best_individual["ctrnn_size"],
