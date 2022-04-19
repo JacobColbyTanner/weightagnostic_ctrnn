@@ -22,6 +22,7 @@ warnings.filterwarnings("ignore")
 
 ctrnn_size = 10
 ctrnn_step_size = 0.01
+transient_steps = 100
 
 bv_step_size = 0.05
 bv_duration = 50
@@ -35,14 +36,13 @@ bv_distance = 5
 pop_size = 100
 genotype_size = ctrnn_size ** 2 + 2 * ctrnn_size
 
-ctrnn = CTRNN(size=ctrnn_size, step_size=ctrnn_step_size)
 
 evol_params = {
-    "num_processes": 6,
+    "num_processes": 20,
     "pop_size": pop_size,  # population size
     "genotype_size": genotype_size,  # dimensionality of solution
     "fitness_function": lambda x: fitnessFunction_vehicle(
-        x, ctrnn, bv_duration, bv_distance, bv_step_size
+        x, ctrnn_size, ctrnn_step_size, bv_duration, bv_distance, bv_step_size, transient_steps
     ),  # custom function defined to evaluate fitness of a solution
     "elitist_fraction": 0.1,  # fraction of population retained as is between generation
     "mutation_variance": 0.05,  # mutation noise added to offspring.
@@ -58,6 +58,7 @@ save_best_individual = {
    "bv_step_size": bv_step_size,
    "bv_duration": bv_duration,
    "bv_distance": bv_distance,
+   "transient_steps": transient_steps,
    "best_fitness": [],
    "mean_fitness": [],
 }
@@ -73,7 +74,7 @@ for i in range(10):
     print(
         len(save_best_individual["best_fitness"]), 
         save_best_individual["best_fitness"][-1], 
-        save_best_individual["best_fitness"][-1]
+        save_best_individual["mean_fitness"][-1]
     )
 
     with open("best_individual", "wb") as f:

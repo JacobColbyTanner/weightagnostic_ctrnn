@@ -4,13 +4,14 @@ import braitenberg as bv
 import matplotlib.pyplot as plt
 import random
 
-def simulate(ctrnn_parameters, ctrnn_size, step_size):
-    duration = 20
-    time = np.arange(0.0, duration, step_size)
+import pickle
 
-    ctrnn = CTRNN(size=ctrnn_size, step_size=step_size)
+def simulate(ctrnn_parameters, ctrnn_size, ctrnn_step_size, duration, distance, bv_step_size, transient_steps):
+    time = np.arange(0.0, duration, bv_step_size)
 
-    ctrnn.set_params(ctrnn_parameters)
+    ctrnn = CTRNN(size=ctrnn_size, step_size=ctrnn_step_size)
+
+    ctrnn.set_params(ctrnn_parameters, discrete=True)
 
     print("CTRNN Network weights")
     print(ctrnn.weights)
@@ -18,10 +19,9 @@ def simulate(ctrnn_parameters, ctrnn_size, step_size):
     #Run until transient dynamics are gone
     ctrnn_input = np.zeros(ctrnn_size)
 
-    for i in range(100):
+    for i in range(transient_steps):
         ctrnn.euler_step(ctrnn_input)
 
-    distance = 5
     bearing = np.arange(0.0, 2 * np.pi, np.pi / 4)
 
     # Create stimuli in environment
@@ -32,7 +32,7 @@ def simulate(ctrnn_parameters, ctrnn_size, step_size):
     foodpos = np.zeros((len(bearing),2))
     for angle in bearing:
         # Create the agent body
-        body = bv.Agent(ctrnn_size)
+        body = bv.Agent()
         food = bv.Food(distance, angle)
         foodpos[ii] = food.pos()
         ctrnn_input = np.zeros(ctrnn_size)
@@ -44,7 +44,7 @@ def simulate(ctrnn_parameters, ctrnn_size, step_size):
             ctrnn_input[-2:] = body.sensor_state()
             agentpos[ii][j] = body.pos().squeeze()
             # Update the nervous system based on inputs
-            for i in range(5):
+            for i in range(int(bv_step_size/ctrnn_step_size)):
                 ctrnn.euler_step(ctrnn_input)
             # Update the body based on nervous system activity
             states = ctrnn.outputs[0:2]
@@ -53,7 +53,7 @@ def simulate(ctrnn_parameters, ctrnn_size, step_size):
 
             # print(states.shape)
             motorneuron_outputs = states
-            body.step(food, motorneuron_outputs, step_size)
+            body.step(food, motorneuron_outputs, bv_step_size)
             # Store current body position
             
             j += 1
@@ -81,6 +81,18 @@ def simulate(ctrnn_parameters, ctrnn_size, step_size):
     plt.clf()
 
 
+if __name__ == "__main__":
+    with open("best_individual", "rb") as f:
+        best_individual = pickle.load(f) 
 
+    simulate(
+        best_individual["params"],
+        best_individual["ctrnn_size"],
+        best_individual["ctrnn_step_size"],
+        best_individual["bv_duration"],
+        best_individual["bv_distance"],
+        best_individual["bv_step_size"],
+        best_individual["transient_steps"],
+        )
 
 

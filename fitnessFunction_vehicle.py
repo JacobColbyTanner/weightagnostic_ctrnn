@@ -3,9 +3,10 @@ import numpy as np
 import braitenberg as bv
 
 
-def fitnessFunction_vehicle(ctrnn_parameters, ctrnn, duration, distance, bv_step_size):
+def fitnessFunction_vehicle(ctrnn_parameters, ctrnn_size, ctrnn_step_size, duration, distance, bv_step_size):
     time = np.arange(0.0, duration, bv_step_size)
 
+    ctrnn = CTRNN(size=ctrnn_size, step_size=ctrnn_step_size)
     ctrnn.set_params(ctrnn_parameters, discrete=True)
 
     # Run to remove transient dynamics
@@ -14,7 +15,6 @@ def fitnessFunction_vehicle(ctrnn_parameters, ctrnn, duration, distance, bv_step
     for i in range(150):
         ctrnn.euler_step(ctrnn_input)
 
-    distance = 5
     bearing = np.arange(0.0, 2 * np.pi, np.pi / 4)
 
     # Create stimuli in environment
