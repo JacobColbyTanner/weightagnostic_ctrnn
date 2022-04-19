@@ -3,7 +3,7 @@ import numpy as np
 import braitenberg as bv
 
 
-def fitnessFunction_vehicle(ctrnn_parameters, ctrnn_size, ctrnn_step_size, duration, distance, bv_step_size):
+def fitnessFunction_vehicle(ctrnn_parameters, ctrnn_size, ctrnn_step_size, duration, distance, bv_step_size, transient_steps):
     time = np.arange(0.0, duration, bv_step_size)
 
     ctrnn = CTRNN(size=ctrnn_size, step_size=ctrnn_step_size)
@@ -12,7 +12,7 @@ def fitnessFunction_vehicle(ctrnn_parameters, ctrnn_size, ctrnn_step_size, durat
     # Run to remove transient dynamics
     ctrnn_input = np.zeros(ctrnn.size)
 
-    for i in range(150):
+    for i in range(transient_steps):
         ctrnn.euler_step(ctrnn_input)
 
     bearing = np.arange(0.0, 2 * np.pi, np.pi / 4)

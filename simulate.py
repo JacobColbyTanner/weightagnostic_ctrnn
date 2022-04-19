@@ -82,7 +82,7 @@ def simulate(ctrnn_parameters, ctrnn_size, ctrnn_step_size, duration, distance, 
 
 
 if __name__ == "__main__":
-    with open("best_individual", "rb") as f:
+    with open("best_individual2", "rb") as f:
         best_individual = pickle.load(f) 
 
     simulate(
