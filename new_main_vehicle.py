@@ -65,7 +65,7 @@ save_best_individual = {
    "mean_fitness": [],
 }
 
-for i in range(10):
+for i in range(100):
     evolution.step_generation()
     
     save_best_individual["params"] = evolution.get_best_individual()
@@ -79,6 +79,6 @@ for i in range(10):
         save_best_individual["mean_fitness"][-1]
     )
 
-    with open("best_individual3", "wb") as f:
+    with open("best_individual4", "wb") as f:
         pickle.dump(save_best_individual, f)
 
