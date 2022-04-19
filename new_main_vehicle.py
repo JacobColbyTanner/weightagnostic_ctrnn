@@ -16,24 +16,33 @@ warnings.filterwarnings("ignore")
 # with open("best_individual", "rb") as f:
 #    best_individual = pickle.load(f)
 
+########################
+# Parameters
+########################
+
 ctrnn_size = 10
-pop_size = 100
-step_size = 0.05
+ctrnn_step_size = 0.01
+
+bv_step_size = 0.05
+bv_duration = 50
+bv_distance = 5
 
 
 ########################
 # Evolve Solutions
 ########################
 
+pop_size = 100
 genotype_size = ctrnn_size ** 2 + 2 * ctrnn_size
 
+ctrnn = CTRNN(size=ctrnn_size, step_size=ctrnn_step_size)
 
 evol_params = {
     "num_processes": 6,
     "pop_size": pop_size,  # population size
     "genotype_size": genotype_size,  # dimensionality of solution
     "fitness_function": lambda x: fitnessFunction_vehicle(
-        x, ctrnn_size, step_size
+        x, ctrnn, bv_duration, bv_distance, bv_step_size
     ),  # custom function defined to evaluate fitness of a solution
     "elitist_fraction": 0.1,  # fraction of population retained as is between generation
     "mutation_variance": 0.05,  # mutation noise added to offspring.
@@ -41,37 +50,32 @@ evol_params = {
 initial_pop = np.random.uniform(size=(pop_size, genotype_size))
 
 evolution = EvolSearch(evol_params, initial_pop)
-evolution.step_generation()
 
-best_fitness = []
-best_fitness.append(evolution.get_best_individual_fitness())
-print("best fitness: ", best_fitness)
-
-print(evolution.get_best_individual())
-
-mean_fitness = []
-mean_fitness.append(evolution.get_mean_fitness())
-
-
-# save_best_individual = {
-#    "params": params,
-#    "included_worlds": included_worlds,
-#    "num_updates": num_updates,
-#    "best_fitness": [],
-#    "mean_fitness": [],
-# }
+save_best_individual = {
+   "params": None,
+   "ctrnn_size": ctrnn_size,
+   "ctrnn_step_size": ctrnn_step_size,
+   "bv_step_size": bv_step_size,
+   "bv_duration": bv_duration,
+   "bv_distance": bv_distance,
+   "best_fitness": [],
+   "mean_fitness": [],
+}
 
 for i in range(10):
     evolution.step_generation()
-    best_individual = evolution.get_best_individual()
-    best_individual_fitness = fitnessFunction_vehicle(
-        best_individual, ctrnn_size, step_size
+    
+    save_best_individual["params"] = evolution.get_best_individual()
+    
+    save_best_individual["best_fitness"].append(evolution.get_best_individual_fitness())
+    save_best_individual["mean_fitness"].append(evolution.get_mean_fitness())
+
+    print(
+        len(save_best_individual["best_fitness"]), 
+        save_best_individual["best_fitness"][-1], 
+        save_best_individual["best_fitness"][-1]
     )
 
-    best_fitness.append(best_individual_fitness)
-    mean_fitness.append(evolution.get_mean_fitness())
-
-    print(len(best_fitness), best_fitness[-1], evolution.get_mean_fitness())
-#    with open("best_individual11", "wb") as f:
-#        pickle.dump(save_best_individual, f)
+    with open("best_individual", "wb") as f:
+        pickle.dump(save_best_individual, f)
 

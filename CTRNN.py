@@ -91,6 +91,34 @@ class CTRNN:
             raise Exception("Size mismatch - len(outputs) != network_size")
         self.__outputs = np.asarray(o)
         self.__states = self.inverse_sigmoid(o) / self.gains - self.biases
+        
+    def set_params(self, params, discrete=False):
+        num_weights = self.size ** 2
+
+        new_weights = params[:num_weights]
+
+        # force same weights, positive and negative across the network
+        if discrete:
+            # translate genome into ctrnn parameters
+            new = np.zeros(num_weights)
+
+            for i in range(num_weights):
+                if new_weights[i] > 2 / 3:
+                    new[i] = 1
+                elif new_weights[i] < 1 / 3:
+                    new[i] = -1
+                else:
+                    new[i] = 0
+
+            self.weights = new.reshape((self.size, self.size))
+        else:
+            self.weights = 2 * (new_weights.reshape((self.size, self.size)) - 0.5)
+
+        self.taus = params[num_weights : (num_weights + self.size)] + 0.0001
+        self.biases = 2 * (
+            params[(num_weights + self.size) : (num_weights + 2 * self.size)]
+            - 0.5
+        ) 
 
     def randomize_states(self, lb, ub):
         """
