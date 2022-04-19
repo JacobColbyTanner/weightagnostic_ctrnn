@@ -88,6 +88,7 @@ if __name__ == "__main__":
     params = np.copy(best_individual["params"])
     for i in range(len(params)):
         modified_params = np.copy(params)
+        # Set param to 0 (set to 0.4 becuase it is between 1/3 and 2/3)
         modified_params[i] = 0.4
         print(
             fitnessFunction_vehicle(        
