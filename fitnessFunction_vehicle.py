@@ -47,7 +47,7 @@ def fitnessFunction_vehicle(ctrnn_parameters, ctrnn_size, ctrnn_step_size, durat
             finaldistance += body.distance(food)
             steps += 1
 
-    fitness = np.clip(1 - ((finaldistance / steps) / distance), 0, 1)
+    fitness = np.clip(1 - ((finaldistance / steps) / distance), 0, 1) - 0.2*np.sum(np.abs(ctrnn.weights))/(ctrnn.size**2)
 
     return fitness
 

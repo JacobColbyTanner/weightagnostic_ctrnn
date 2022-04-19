@@ -1,4 +1,5 @@
 from CTRNN import CTRNN
+from fitnessFunction_vehicle import fitnessFunction_vehicle
 import numpy as np
 import braitenberg as bv
 import matplotlib.pyplot as plt
@@ -15,6 +16,7 @@ def simulate(ctrnn_parameters, ctrnn_size, ctrnn_step_size, duration, distance, 
 
     print("CTRNN Network weights")
     print(ctrnn.weights)
+    print(np.sum(np.abs(ctrnn.weights)))
 
     #Run until transient dynamics are gone
     ctrnn_input = np.zeros(ctrnn_size)
@@ -74,17 +76,33 @@ def simulate(ctrnn_parameters, ctrnn_size, ctrnn_step_size, duration, distance, 
 
         plt.plot(agentpos[i,:,0],agentpos[i,:,1], color=color)
         plt.plot(foodpos[i, 0], foodpos[i, 1],'o', color=color)
-        print("In plots")
 
-    plt.savefig(f"{ctrnn_size}_neuron_all.png")
-    print("After save")
+    plt.savefig(f"{ctrnn_size}_neuron_all2.png")
     plt.clf()
 
 
 if __name__ == "__main__":
-    with open("best_individual2", "rb") as f:
+    with open("best_individual3", "rb") as f:
         best_individual = pickle.load(f) 
-
+"""
+    params = np.copy(best_individual["params"])
+    for i in range(len(params)):
+        modified_params = np.copy(params)
+        modified_params[i] = 0.4
+        print(
+            fitnessFunction_vehicle(        
+                modified_params,
+                best_individual["ctrnn_size"],
+                best_individual["ctrnn_step_size"],
+                best_individual["bv_duration"],
+                best_individual["bv_distance"],
+                best_individual["bv_step_size"],
+                best_individual["transient_steps"],
+                ),
+                params[i],
+                modified_params[i]
+            )
+"""
     simulate(
         best_individual["params"],
         best_individual["ctrnn_size"],
@@ -94,5 +112,6 @@ if __name__ == "__main__":
         best_individual["bv_step_size"],
         best_individual["transient_steps"],
         )
+
 
 

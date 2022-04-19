@@ -12,9 +12,9 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-# use_best_individual = True
-# with open("best_individual", "rb") as f:
-#    best_individual = pickle.load(f)
+use_best_individual = False
+with open("best_individual2", "rb") as f:
+   best_individual = pickle.load(f)
 
 ########################
 # Parameters
@@ -25,7 +25,7 @@ ctrnn_step_size = 0.01
 transient_steps = 100
 
 bv_step_size = 0.05
-bv_duration = 50
+bv_duration = 100
 bv_distance = 5
 
 
@@ -33,21 +33,23 @@ bv_distance = 5
 # Evolve Solutions
 ########################
 
-pop_size = 100
+pop_size = 1000
 genotype_size = ctrnn_size ** 2 + 2 * ctrnn_size
 
 
 evol_params = {
-    "num_processes": 20,
+    "num_processes": 200,
     "pop_size": pop_size,  # population size
     "genotype_size": genotype_size,  # dimensionality of solution
     "fitness_function": lambda x: fitnessFunction_vehicle(
         x, ctrnn_size, ctrnn_step_size, bv_duration, bv_distance, bv_step_size, transient_steps
     ),  # custom function defined to evaluate fitness of a solution
-    "elitist_fraction": 0.1,  # fraction of population retained as is between generation
-    "mutation_variance": 0.1,  # mutation noise added to offspring.
+    "elitist_fraction": 0.02,  # fraction of population retained as is between generation
+    "mutation_variance": 0.05,  # mutation noise added to offspring.
 }
 initial_pop = np.random.uniform(size=(pop_size, genotype_size))
+if use_best_individual:
+    initial_pop[0] = best_individual["params"]
 
 evolution = EvolSearch(evol_params, initial_pop)
 
@@ -77,6 +79,6 @@ for i in range(10):
         save_best_individual["mean_fitness"][-1]
     )
 
-    with open("best_individual2", "wb") as f:
+    with open("best_individual3", "wb") as f:
         pickle.dump(save_best_individual, f)
 
