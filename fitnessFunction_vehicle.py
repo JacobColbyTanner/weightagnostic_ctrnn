@@ -8,8 +8,11 @@ def fitnessFunction_vehicle(ctrnn_parameters, ctrnn, duration, distance, bv_step
 
     ctrnn.set_params(ctrnn_parameters, discrete=True)
 
-    # Create the agent body
-    body = bv.Agent()
+    # Run to remove transient dynamics
+    ctrnn_input = np.zeros(ctrnn.size)
+
+    for i in range(150):
+        ctrnn.euler_step(ctrnn_input)
 
     distance = 5
     bearing = np.arange(0.0, 2 * np.pi, np.pi / 4)
@@ -20,7 +23,8 @@ def fitnessFunction_vehicle(ctrnn_parameters, ctrnn, duration, distance, bv_step
     for angle in bearing:
         food = bv.Food(distance, angle)
 
-        ctrnn_input = np.zeros(ctrnn.size)
+        # Create the agent body
+        body = bv.Agent()
 
         for t in time:
 
