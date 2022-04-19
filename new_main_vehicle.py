@@ -20,7 +20,7 @@ warnings.filterwarnings("ignore")
 # Parameters
 ########################
 
-ctrnn_size = 10
+ctrnn_size = 50
 ctrnn_step_size = 0.01
 transient_steps = 100
 
@@ -45,7 +45,7 @@ evol_params = {
         x, ctrnn_size, ctrnn_step_size, bv_duration, bv_distance, bv_step_size, transient_steps
     ),  # custom function defined to evaluate fitness of a solution
     "elitist_fraction": 0.1,  # fraction of population retained as is between generation
-    "mutation_variance": 0.05,  # mutation noise added to offspring.
+    "mutation_variance": 0.1,  # mutation noise added to offspring.
 }
 initial_pop = np.random.uniform(size=(pop_size, genotype_size))
 
@@ -77,6 +77,6 @@ for i in range(10):
         save_best_individual["mean_fitness"][-1]
     )
 
-    with open("best_individual", "wb") as f:
+    with open("best_individual2", "wb") as f:
         pickle.dump(save_best_individual, f)
 
