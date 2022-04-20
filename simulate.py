@@ -7,12 +7,12 @@ import random
 
 import pickle
 
-def simulate(ctrnn_parameters, ctrnn_size, ctrnn_step_size, duration, distance, bv_step_size, transient_steps):
+def simulate(ctrnn_parameters, ctrnn_size, ctrnn_step_size, duration, distance, bv_step_size, transient_steps, discrete=True):
     time = np.arange(0.0, duration, bv_step_size)
 
     ctrnn = CTRNN(size=ctrnn_size, step_size=ctrnn_step_size)
 
-    ctrnn.set_params(ctrnn_parameters, discrete=True)
+    ctrnn.set_params(ctrnn_parameters, discrete=discrete)
 
     print("CTRNN Network weights")
     print(ctrnn.weights)
@@ -69,57 +69,31 @@ def simulate(ctrnn_parameters, ctrnn_size, ctrnn_step_size, duration, distance, 
         color = (r, g, b)
         x = agentpos[i,0,0]
         y = agentpos[i,0,1]
-        print("X")
-        print(x)
-        print("Y")
-        print(y)
 
         plt.plot(agentpos[i,:,0],agentpos[i,:,1], color=color)
         plt.plot(foodpos[i, 0], foodpos[i, 1],'o', color=color)
 
-    plt.savefig(f"{ctrnn_size}_neuron_all2.png")
+    plt.savefig(f"{ctrnn_size}_neuron_all4.png")
     plt.clf()
 
 
 if __name__ == "__main__":
-    with open("best_individual3", "rb") as f:
+    with open("best_individual4", "rb") as f:
         best_individual = pickle.load(f) 
-
-    '''
-    for i in range(len(params)):
-        modified_params = np.copy(best_individual["params"])
-        # Set param to 0 (set to 0.4 becuase it is between 1/3 and 2/3)
-        modified_params[i] = 0.4
-        print(
-            fitnessFunction_vehicle(        
-                modified_params,
-                best_individual["ctrnn_size"],
-                best_individual["ctrnn_step_size"],
-                best_individual["bv_duration"],
-                best_individual["bv_distance"],
-                best_individual["bv_step_size"],
-                best_individual["transient_steps"],
-                ),
-                params[i],
-                modified_params[i]
-            )
-    '''
-
-    for multiplier in np.arange(-10, 10, 1):
-        print(
-            fitnessFunction_vehicle(        
-                best_individual["params"],
-                best_individual["ctrnn_size"],
-                best_individual["ctrnn_step_size"],
-                best_individual["bv_duration"],
-                best_individual["bv_distance"],
-                best_individual["bv_step_size"],
-                best_individual["transient_steps"],
-                multiplier
-                ),
-                multiplier
-            )
         
+    print(
+        fitnessFunction_vehicle(        
+            best_individual["params"],
+            best_individual["ctrnn_size"],
+            best_individual["ctrnn_step_size"],
+            best_individual["bv_duration"],
+            best_individual["bv_distance"],
+            best_individual["bv_step_size"],
+            best_individual["transient_steps"],
+            best_individual["discrete"],
+            ),
+        )
+
     simulate(
         best_individual["params"],
         best_individual["ctrnn_size"],
@@ -128,6 +102,7 @@ if __name__ == "__main__":
         best_individual["bv_distance"],
         best_individual["bv_step_size"],
         best_individual["transient_steps"],
+        best_individual["discrete"],
         )
 
 

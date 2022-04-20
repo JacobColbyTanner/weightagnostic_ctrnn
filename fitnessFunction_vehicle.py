@@ -3,11 +3,11 @@ import numpy as np
 import braitenberg as bv
 
 
-def fitnessFunction_vehicle(ctrnn_parameters, ctrnn_size, ctrnn_step_size, duration, distance, bv_step_size, transient_steps, multiplier=1):
+def fitnessFunction_vehicle(ctrnn_parameters, ctrnn_size, ctrnn_step_size, duration, distance, bv_step_size, transient_steps, discrete=True, multiplier=1):
     time = np.arange(0.0, duration, bv_step_size)
 
     ctrnn = CTRNN(size=ctrnn_size, step_size=ctrnn_step_size)
-    ctrnn.set_params(ctrnn_parameters, discrete=True)
+    ctrnn.set_params(ctrnn_parameters, discrete=discrete)
     ctrnn.weights = multiplier*ctrnn.weights
 
     # Run to remove transient dynamics
@@ -40,7 +40,7 @@ def fitnessFunction_vehicle(ctrnn_parameters, ctrnn_size, ctrnn_step_size, durat
             states = ctrnn.outputs[0:2]
 
             if np.isnan(np.sum(states)):
-                return 0.0
+                return -100.0
 
             # print(states.shape)
             motorneuron_outputs = states
@@ -48,7 +48,7 @@ def fitnessFunction_vehicle(ctrnn_parameters, ctrnn_size, ctrnn_step_size, durat
             finaldistance += body.distance(food)
             steps += 1
 
-    fitness = np.clip(1 - ((finaldistance / steps) / distance), 0, 1)# - 0.2*np.sum(np.abs(ctrnn.weights))/(ctrnn.size**2)
+    fitness = np.clip(1 - ((finaldistance / steps) / distance), 0, 1) - 0.01*np.sum(np.abs(ctrnn.weights))/(ctrnn.size**2)
 
     return fitness
 

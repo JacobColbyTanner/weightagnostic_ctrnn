@@ -20,6 +20,7 @@ for i in range(len(params)):
             best_individual["bv_distance"],
             best_individual["bv_step_size"],
             best_individual["transient_steps"],
+            best_individual["discrete"],
             ),
             best_individual["params"][i],
             modified_params[i]
@@ -37,6 +38,7 @@ for multiplier in np.arange(-10, 10, 1):
             best_individual["bv_distance"],
             best_individual["bv_step_size"],
             best_individual["transient_steps"],
+            best_individual["discrete"],
             multiplier
             ),
             multiplier
