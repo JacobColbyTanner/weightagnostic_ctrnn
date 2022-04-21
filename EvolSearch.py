@@ -117,11 +117,15 @@ class EvolSearch:
 
         # creating copies and adding noise
         mutated_elites = np.tile(self.pop, [num_reps, 1])
-        mutated_elites += np.random.normal(
-            loc=0.0,
-            scale=self.mutation_variance,
-            size=[num_reps * self.elitist_fraction, self.genotype_size],
-        )
+
+        replace_indices = np.random.choice([False, True], size=np.shape(mutated_elites), p=[1-self.mutation_variance, self.mutation_variance])
+        
+        mutated_elites[replace_indices] = np.random.uniform(size=np.sum(replace_indices))
+        #mutated_elites += np.random.normal(
+        #    loc=0.0,
+        #    scale=self.mutation_variance,
+        #    size=[num_reps * self.elitist_fraction, self.genotype_size],
+        #)
 
         # concatenating elites with their mutated versions
         self.pop = np.vstack((self.pop, mutated_elites))
@@ -129,10 +133,7 @@ class EvolSearch:
         # clipping to pop_size
         self.pop = self.pop[: self.pop_size, :]
 
-        # clipping to genotype range
-        for i in range(self.pop_size):
-            for j in range(self.genotype_size):
-                self.pop[i, j] = np.clip(self.pop[i, j], 0, 1)
+        #self.pop = np.clip(self.pop, 0, 1)
 
     def step_generation(self):
         """
