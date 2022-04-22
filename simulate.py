@@ -25,7 +25,6 @@ def simulate(ctrnn_parameters, ctrnn_size, ctrnn_step_size, duration, distance, 
         ctrnn.euler_step(ctrnn_input)
 
     bearing = np.arange(0.0, 2 * np.pi, np.pi / 4)
-
     # Create stimuli in environment
     steps = 0
     finaldistance = 0
@@ -78,9 +77,18 @@ def simulate(ctrnn_parameters, ctrnn_size, ctrnn_step_size, duration, distance, 
 
 
 if __name__ == "__main__":
-    with open("best_individual4", "rb") as f:
+    from os import listdir
+    from os.path import isfile, join
+
+    files_path = "10_neuron_sparse_scan"
+    
+    files = [f for f in listdir(files_path) if isfile(join(files_path, f))]
+    
+    file_index = np.random.randint(low=0, high=200)
+    with open(files_path + "/" + files[file_index], "rb") as f:
         best_individual = pickle.load(f) 
         
+    print(files[file_index])
     print(
         fitnessFunction_vehicle(        
             best_individual["params"],

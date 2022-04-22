@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#SBATCH -J weight_agnostic
+#SBATCH -p general
+#SBATCH -o %j_output.txt
+#SBATCH -e %j_errors.err
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=joshnunl@iu.edu
+#SBATCH --nodes=10
+#SBATCH --ntasks-per-node=20
+#SBATCH --time=05:00:00
+#SBATCH --mem=64G
+#SBATCH --cpus-per-task=12
+
+#Load any modules that your program needs
+module load deeplearning/2.8.0
+
+#Run your program
+srun python sparsity_scan.py
